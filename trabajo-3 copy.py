@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, LogisticRegression
-from sklearn.metrics import r2_score, confusion_matrix, accuracy_score, f1_score
+from sklearn.metrics import  confusion_matrix, accuracy_score, f1_score
 
 # === 1. CARGA Y LIMPIEZA DE DATOS ===
 def cargar_y_limpiar_datos(url, columnas):
@@ -14,7 +14,7 @@ def cargar_y_limpiar_datos(url, columnas):
     print(f"[INFO] Datos tras limpieza: {len(df)} filas.")
     return df
 
-# === 2. DIVISIÓN ENTRE ENTRENAMIENTO Y PRUEBA ===
+# === 2. DIVISIÓN ENTRE ENTRENAMIENTO Y PRUEBA ===#la buena es la 20
 def dividir_entrenamiento_prueba(X, y, prueba_size=0.2, random_state=20):
     np.random.seed(random_state)
     indices = np.random.permutation(len(X))
@@ -68,23 +68,24 @@ nuevo_estudiante = np.array([[25, 68, 58]])  # horas, examen previo, asistencia
 prediccion = predecir(nuevo_estudiante, beta)
 print(f"[RESULTADO] Predicción para nuevo estudiante: {prediccion[0]:.2f}")
 
+from sklearn.metrics import confusion_matrix
+
+# Convertimos a clasificación binaria
+y_test_clasificado = (y_test >= 60).astype(int)
+y_pred_clasificado = (y_pred >= 60).astype(int)
+print("y_test",y_test)
+print("y_test_clasificado",y_test_clasificado)
+
+
 # Matriz de confusión
-matriz = confusion_matrix(y_test_clf, y_pred_clf)
-acc = accuracy_score(y_test_clf, y_pred_clf)
-f1 = f1_score(y_test_clf, y_pred_clf)
-
-print("\nMatriz de confusión:")
+matriz = confusion_matrix(y_test_clasificado, y_pred_clasificado)
+print("\n[RESULTADO] Matriz de confusión:")
 print(matriz)
-print(f"Accuracy: {acc:.4f}")
-print(f"F1-score: {f1:.4f}")
 
-# 4. Predicción para nuevo estudiante
-nuevo_estudiante = np.array([[25, 58, 68]])  # 25 horas, 58% asistencia, 68 nota previa
+accuracy = accuracy_score(y_test_clasificado, y_pred_clasificado)
+print(f"[RESULTADO] Accuracy: {accuracy:.4f}")
 
-# prediccion_lineal = modelo_lineal.predict(nuevo_estudiante)[0]
-# prediccion_logistica = modelo_logistico.predict(nuevo_estudiante)[0]
-# proba_aprobado = modelo_logistico.predict_proba(nuevo_estudiante)[0][1]
+# F1-Score
+f1 = f1_score(y_test_clasificado, y_pred_clasificado)
+print(f"[RESULTADO] F1 Score: {f1:.4f}")
 
-print("\nPredicciones para nuevo estudiante:")
-print(f"Calificación estimada: {prediccion_lineal:.2f}")
-print(f"¿Aprobado? {'Sí' if prediccion_logistica == 1 else 'No'} (probabilidad: {proba_aprobado:.2f})")

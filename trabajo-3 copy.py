@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.metrics import  confusion_matrix, accuracy_score, f1_score
-
+#################################   PUNTO 1   #################################  
 # === 1. CARGA Y LIMPIEZA DE DATOS ===
 def cargar_y_limpiar_datos(url, columnas):
     df = pd.read_csv(url, usecols=columnas, encoding='latin1')
@@ -15,7 +15,7 @@ def cargar_y_limpiar_datos(url, columnas):
     return df
 
 # === 2. DIVISIÓN ENTRE ENTRENAMIENTO Y PRUEBA ===#la buena es la 20
-def dividir_entrenamiento_prueba(X, y, prueba_size=0.2, random_state=20):
+def dividir_entrenamiento_prueba(X, y, prueba_size=0.2, random_state=42):
     np.random.seed(random_state)
     indices = np.random.permutation(len(X))
     n_train = int(len(X) * (1 - prueba_size))
@@ -66,8 +66,8 @@ print(f"[RESULTADO] R² sobre conjunto de prueba: {r2:.4f}")
 # Predicción para nuevo estudiante
 nuevo_estudiante = np.array([[25, 68, 58]])  # horas, examen previo, asistencia
 prediccion = predecir(nuevo_estudiante, beta)
-print(f"[RESULTADO] Predicción para nuevo estudiante: {prediccion[0]:.2f}")
-
+print(f"[RESULTADO] Predicción para nuevo estudiante: {prediccion[0]:.2f}\n")
+ 
 from sklearn.metrics import confusion_matrix
 
 # Convertimos a clasificación binaria
@@ -89,3 +89,53 @@ print(f"[RESULTADO] Accuracy: {accuracy:.4f}")
 f1 = f1_score(y_test_clasificado, y_pred_clasificado)
 print(f"[RESULTADO] F1 Score: {f1:.4f}")
 
+
+#################################   PUNTO 2   #################################  
+
+
+
+
+
+################## DE ACA ABAJO
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix, accuracy_score, f1_score
+from sklearn.svm import SVC
+
+#################################   EJERCICIO 2 - SVM   #################################
+
+
+
+# Convertir a clasificación binaria
+y_train_clasificado = (y_train >= 60).astype(int) 
+#y_test_clasificado = (y_test >= 60).astype(int)
+
+# Probar diferentes kernels y valores de C
+kernels = ['linear', 'rbf', 'poly', 'sigmoid']
+C_values = [0.1, 1, 10]
+
+for kernel in kernels:
+    for C in C_values:
+        print(f"\n[MODELO SVM] Kernel: {kernel}, C: {C}")
+        modelo_svm = SVC(kernel=kernel, C=C)
+        modelo_svm.fit(X_train, y_train_clasificado)
+        y_pred_svm = modelo_svm.predict(X_test)
+
+        matriz = confusion_matrix(y_test_clasificado, y_pred_svm)
+        print("[RESULTADO] Matriz de confusión:")
+        print(matriz)
+
+        accuracy = accuracy_score(y_test_clasificado, y_pred_svm)
+        f1 = f1_score(y_test_clasificado, y_pred_svm)
+        print(f"[RESULTADO] Accuracy: {accuracy:.4f}")
+        print(f"[RESULTADO] F1 Score: {f1:.4f}")
+
+# Predicción para nuevo estudiante usando un modelo elegido (ejemplo: RBF con C=1)
+modelo_final = SVC(kernel='rbf', C=1)
+modelo_final.fit(X_train, y_train_clasificado)
+
+nuevo_estudiante = np.array([[25, 68, 58]])
+prediccion = modelo_final.predict(nuevo_estudiante)
+estado = "Aprobado" if prediccion[0] == 1 else "Desaprobado"
+print(f"\n[RESULTADO] Condición de aprobación del nuevo estudiante: {estado}")

@@ -1,8 +1,11 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, LogisticRegression
-from sklearn.metrics import  confusion_matrix, accuracy_score, f1_score
+from sklearn.metrics import confusion_matrix, accuracy_score, f1_score
+from sklearn.svm import SVC
+
 #################################   PUNTO 1   #################################  
 # === 1. CARGA Y LIMPIEZA DE DATOS ===
 def cargar_y_limpiar_datos(url, columnas):
@@ -15,7 +18,7 @@ def cargar_y_limpiar_datos(url, columnas):
     return df
 
 # === 2. DIVISIÓN ENTRE ENTRENAMIENTO Y PRUEBA ===#la buena es la 20
-def dividir_entrenamiento_prueba(X, y, prueba_size=0.2, random_state=42):
+def dividir_entrenamiento_prueba(X, y, prueba_size=0.2, random_state=20):
     np.random.seed(random_state)
     indices = np.random.permutation(len(X))
     n_train = int(len(X) * (1 - prueba_size))
@@ -93,19 +96,13 @@ print(f"[RESULTADO] F1 Score: {f1:.4f}")
 #################################   PUNTO 2   #################################  
 
 
-
-
-
-################## DE ACA ABAJO
-import pandas as pd
-import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import confusion_matrix, accuracy_score, f1_score
-from sklearn.svm import SVC
-
 #################################   EJERCICIO 2 - SVM   #################################
 
 
+
+
+
+    
 
 # Convertir a clasificación binaria
 y_train_clasificado = (y_train >= 60).astype(int) 
@@ -130,6 +127,17 @@ for kernel in kernels:
         f1 = f1_score(y_test_clasificado, y_pred_svm)
         print(f"[RESULTADO] Accuracy: {accuracy:.4f}")
         print(f"[RESULTADO] F1 Score: {f1:.4f}")
+        import seaborn as sns
+
+        # === GRAFICAR MATRIZ DE CONFUSIÓN ===
+        plt.figure(figsize=(6, 5))
+        sns.heatmap(matriz, annot=True, fmt='d', cmap='Blues', cbar=False)
+        plt.xlabel('Predicción')
+        plt.ylabel('Real')
+        plt.title(f'Matriz de Confusión\nKernel: {kernel}, C: {C}')
+        plt.tight_layout()
+        plt.show()
+
 
 # Predicción para nuevo estudiante usando un modelo elegido (ejemplo: RBF con C=1)
 modelo_final = SVC(kernel='rbf', C=1)
@@ -139,3 +147,43 @@ nuevo_estudiante = np.array([[25, 68, 58]])
 prediccion = modelo_final.predict(nuevo_estudiante)
 estado = "Aprobado" if prediccion[0] == 1 else "Desaprobado"
 print(f"\n[RESULTADO] Condición de aprobación del nuevo estudiante: {estado}")
+
+
+#*******************************************************************************************************************
+from sklearn.decomposition import PCA
+
+# Reducir a 2 dimensiones para visualizar
+pca = PCA(n_components=2)
+X_train_2D = pca.fit_transform(X_train)
+X_test_2D = pca.transform(X_test)
+
+# Nuevos datos para visualización
+kernels = ['linear', 'rbf', 'poly', 'sigmoid']
+C_values = [0.1, 1, 10]
+
+for kernel in kernels:
+    for C in C_values:
+        modelo = SVC(kernel=kernel, C=C)
+        modelo.fit(X_train_2D, y_train_clasificado)
+        y_pred = modelo.predict(X_test_2D)
+
+        # Crear malla para graficar fronteras
+        x_min, x_max = X_train_2D[:, 0].min() - 1, X_train_2D[:, 0].max() + 1
+        y_min, y_max = X_train_2D[:, 1].min() - 1, X_train_2D[:, 1].max() + 1
+        xx, yy = np.meshgrid(np.linspace(x_min, x_max, 500),
+                            np.linspace(y_min, y_max, 500))
+        grid = np.c_[xx.ravel(), yy.ravel()]
+        Z = modelo.predict(grid).reshape(xx.shape)
+
+        # Graficar
+        plt.figure(figsize=(6, 5))
+        plt.contourf(xx, yy, Z, cmap=plt.cm.coolwarm, alpha=0.6)
+        plt.scatter(X_test_2D[:, 0], X_test_2D[:, 1], c=y_test_clasificado, cmap=plt.cm.coolwarm, edgecolors='k')
+        plt.title(f"Frontera de decisión SVM (kernel='{kernel}')(C='{C})")
+        # plt.xlabel("x1")
+        # plt.ylabel("x2")
+        varianza_explicada = pca.explained_variance_ratio_ * 100
+        plt.xlabel(f"PC1 ({varianza_explicada[0]:.2f}% varianza)")
+        plt.ylabel(f"PC2 ({varianza_explicada[1]:.2f}% varianza)")
+        plt.tight_layout()
+        plt.show()

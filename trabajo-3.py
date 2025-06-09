@@ -7,6 +7,7 @@ from sklearn.metrics import confusion_matrix, accuracy_score, f1_score
 from sklearn.svm import SVC
 from sklearn.decomposition import PCA
 import seaborn as sns
+from funciones import imprimirMatriz,visualizarAcyF1
 #################################   PUNTO 1   #################################  
 # === 1. CARGA Y LIMPIEZA DE DATOS ===
 def cargar_y_limpiar_datos(url, columnas):
@@ -76,44 +77,20 @@ from sklearn.metrics import confusion_matrix
 # Convertimos a clasificación binaria
 y_test_clasificado = (y_test >= 60).astype(int)
 y_pred_clasificado = (y_pred >= 60).astype(int)
-# print("y_test",y_test)
-# print("y_test_clasificado",y_test_clasificado)
+
 
 # Matriz de confusión
 print("EJERCICIO n°1 ")
-matriz = confusion_matrix(y_test_clasificado, y_pred_clasificado)
-print(" Matriz de confusión:")
-print(matriz)
-# === GRAFICAR MATRIZ DE CONFUSIÓN ===
+imprimirMatriz(y_test_clasificado, y_pred_clasificado,'Matriz de Confusión De Regresión Logística')
 
-plt.figure(figsize=(6, 5))
-sns.heatmap(
-    matriz,
-    annot=True,               # Mostrar los números
-    fmt='d',                  # Formato decimal
-    cmap='Blues',             # Paleta de colores
-    cbar=False,               # Quitar barra de color
-    annot_kws={"size": 60}    # Cambiar el tamaño de fuente de los números
-)
-plt.xlabel('Predicción', fontsize=14)
-plt.ylabel('Real', fontsize=14)
-plt.title('Matriz de Confusión De Regresión Logística', fontsize=16)
-plt.tight_layout()
-plt.show()
 
-accuracy = accuracy_score(y_test_clasificado, y_pred_clasificado)
-print(f"Accuracy: {accuracy:.4f}")
-
-# F1-Score
-f1 = f1_score(y_test_clasificado, y_pred_clasificado)
-print(f"F1 Score: {f1:.4f}\n")
-
+visualizarAcyF1(y_test_clasificado, y_pred_clasificado,'Metrica de Modelo De Regresión Logística')
 
 #################################   EJERCICIO 2 - SVM   #################################
 print("EJERCICIO n°2 ")
 # Convertir a clasificación binaria
 y_train_clasificado = (y_train >= 60).astype(int) 
-#y_test_clasificado = (y_test >= 60).astype(int)
+
 ######################////////////////////////   **************************/////////////////
 pca = PCA(n_components=2)
 X_train_2D = pca.fit_transform(X_train) # Aplica PCA al set de entrenamiento (ajuste + transformación)
@@ -125,38 +102,24 @@ C_values = [0.1, 1, 10]
 
 for kernel in kernels:
     for C in C_values:
+        
         print(f"\n[MODELO SVM] \nKernel: {kernel}, C: {C}")
         modelo_svm = SVC(kernel=kernel, C=C) # Crear modelo con kernel y C actual
         modelo_svm.fit(X_train, y_train_clasificado) # Entrenar modelo con los datos de entenemiento
         y_pred_svm = modelo_svm.predict(X_test)  # Realiza predicciones sobre los datos de prueba 
 
         # Calcula la matriz de confusión comparando las predicciones con las verdaderas etiquetas
-        matriz = confusion_matrix(y_test_clasificado, y_pred_svm)
-        print(" Matriz de confusión:")
-        print(matriz)
+          # === GRAFICAR MATRIZ DE CONFUSIÓN ===
+        imprimirMatriz(y_test_clasificado, y_pred_svm,'Matriz de Confusión\nKernel:','C:',kernel,C)#nuevo
 
         # Calcula la precisión (accuracy) del modelo
-        accuracy = accuracy_score(y_test_clasificado, y_pred_svm)
-        # Calcula el F1 Score, una métrica que combina precisión y exhaustividad
-        f1 = f1_score(y_test_clasificado, y_pred_svm)
-        print(f" Accuracy: {accuracy:.4f}")
-        print(f" F1 Score: {f1:.4f}")
-       
-
-        # === GRAFICAR MATRIZ DE CONFUSIÓN ===
-        plt.figure(figsize=(6, 5))
-        sns.heatmap(matriz, annot=True, fmt='d', cmap='Blues', cbar=False,annot_kws={"size": 60} )
-        plt.xlabel('Predicción')
-        plt.ylabel('Real')
-        plt.title(f'Matriz de Confusión\nKernel: {kernel}, C: {C}')
-        plt.tight_layout()
-        plt.show()
-
-
+        visualizarAcyF1(y_test_clasificado, y_pred_svm,'Metrica de Modelo Kernel:','C:',kernel,C)
+        
+        
 
         # ===graficar frontera de decision SVM ===
-#Se vuelve a entrenar el modelo usando los datos reducidos 
-# a 2 dimensiones con PCA, para graficar las fronteras de decisión.
+        #Se vuelve a entrenar el modelo usando los datos reducidos 
+        # a 2 dimensiones con PCA, para graficar las fronteras de decisión.
 
         modelo = SVC(kernel=kernel, C=C)
         modelo.fit(X_train_2D, y_train_clasificado)
@@ -194,11 +157,4 @@ print(f"\nCondición de aprobación del nuevo estudiante: {estado}")
 #*******************************************************************************************************************
 
 
-# Reducir a 2 dimensiones para visualizar
-
-# Nuevos datos para visualización
-""" kernels = ['linear', 'rbf', 'poly', 'sigmoid']
-C_values = [0.1, 1, 10]
-
-for kernel in kernels:
-    for C in C_values: """
+#

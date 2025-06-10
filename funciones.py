@@ -1,11 +1,6 @@
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.metrics import confusion_matrix, accuracy_score, f1_score
-from sklearn.svm import SVC
-from sklearn.decomposition import PCA
 import seaborn as sns
 
 
@@ -47,14 +42,61 @@ def visualizarAcyF1(y_true, y_pred,titulo1,titulo2="",kernel="",C=""):
     print(f" Accuracy: {accuracy:.4f}")
     print(f" F1 Score: {f1:.4f}")
     titulo= f"{titulo1}{kernel}{titulo2}{C}"
+    if(kernel==""):
+        barraTitulo=f"Reg.Log."
+    else:    
+        barraTitulo=f"{kernel}{titulo2}{C}"
     metrics = {'Accuracy': accuracy, 'F1 Score': f1}
 
     sns.set_style("whitegrid")
     plt.figure(figsize=(5, 4))
-    sns.barplot(x=list(metrics.keys()), y=list(metrics.values()), palette="viridis")
+    sns.barplot(
+    x=list(metrics.keys()),
+    y=list(metrics.values()),
+    hue=list(metrics.keys()),  # assign x variable to hue
+    palette="viridis",
+    legend=False               # avoid duplicate legend
+)
+
+   # sns.barplot(x=list(metrics.keys()), y=list(metrics.values()), palette="viridis")
     plt.title(titulo)
     plt.ylim(0, 1)
     plt.ylabel("Valor")
     for i, v in enumerate(metrics.values()):
         plt.text(i, v + 0.02, f"{v:.3f}", ha='center')
+    plt.show()
+    return((f1,accuracy,barraTitulo))
+
+
+def graficoDeBarrasF1yAc(array_de_metricas):
+ 
+
+    
+
+    df = pd.DataFrame(array_de_metricas, columns=['F1 Score', 'Accuracy', 'Modelo'])
+    
+    # Convertir a formato largo para Seaborn
+    df_largo = pd.melt(df, id_vars='Modelo', var_name='Métrica', value_name='Valor')
+
+    # Configuración de estilo
+    sns.set_style("whitegrid")
+    plt.figure(figsize=(10, 6))
+    
+    # Crear gráfico de barras
+    ax = sns.barplot(data=df_largo, x='Modelo', y='Valor', hue='Métrica', palette='viridis')
+
+    # Agregar etiquetas numéricas a cada barra
+    for p in ax.patches:
+        height = p.get_height()
+        ax.annotate(f'{height:.3f}', 
+                    (p.get_x() + p.get_width() / 2., height + 0.01), 
+                    ha='center', va='center', fontsize=9)
+
+    # Mejoras visuales
+    plt.title('Comparación de Accuracy y F1 Score por Modelo')
+    plt.ylim(0, 1.1)
+    plt.ylabel('Valor')
+    plt.xticks(rotation=15)
+    plt.legend(title='Métrica')
+    plt.tight_layout()
     plt.show()

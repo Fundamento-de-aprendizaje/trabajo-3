@@ -3,11 +3,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, LogisticRegression
-from sklearn.metrics import confusion_matrix, accuracy_score, f1_score
+
 from sklearn.svm import SVC
 from sklearn.decomposition import PCA
-import seaborn as sns
-from funciones import imprimirMatriz,visualizarAcyF1
+
+from funciones import imprimirMatriz,visualizarAcyF1,graficoDeBarrasF1yAc
 #################################   PUNTO 1   #################################  
 # === 1. CARGA Y LIMPIEZA DE DATOS ===
 def cargar_y_limpiar_datos(url, columnas):
@@ -82,9 +82,9 @@ y_pred_clasificado = (y_pred >= 60).astype(int)
 # Matriz de confusión
 print("EJERCICIO n°1 ")
 imprimirMatriz(y_test_clasificado, y_pred_clasificado,'Matriz de Confusión De Regresión Logística')
+array_de_metricas=[]
 
-
-visualizarAcyF1(y_test_clasificado, y_pred_clasificado,'Metrica de Modelo De Regresión Logística')
+array_de_metricas=array_de_metricas+[visualizarAcyF1(y_test_clasificado, y_pred_clasificado,'Metrica de Modelo De Regresión Logística')]
 
 #################################   EJERCICIO 2 - SVM   #################################
 print("EJERCICIO n°2 ")
@@ -113,7 +113,8 @@ for kernel in kernels:
         imprimirMatriz(y_test_clasificado, y_pred_svm,'Matriz de Confusión\nKernel:','C:',kernel,C)#nuevo
 
         # Calcula la precisión (accuracy) del modelo
-        visualizarAcyF1(y_test_clasificado, y_pred_svm,'Metrica de Modelo Kernel:','C:',kernel,C)
+        array_de_metricas=array_de_metricas+[visualizarAcyF1(y_test_clasificado, y_pred_svm,'Metrica de Modelo Kernel:','C:',kernel,C)]
+       # visualizarAcyF1(y_test_clasificado, y_pred_svm,'Metrica de Modelo Kernel:','C:',kernel,C)
         
         
 
@@ -143,9 +144,9 @@ for kernel in kernels:
         plt.tight_layout()
         plt.show()
 
-
+graficoDeBarrasF1yAc(array_de_metricas)
 # Predicción para nuevo estudiante usando un modelo elegido (ejemplo: RBF con C=1)
-modelo_final = SVC(kernel='rbf', C=1)
+modelo_final = SVC(kernel='rbf', C=10)
 modelo_final.fit(X_train, y_train_clasificado)
 
 nuevo_estudiante = np.array([[25, 68, 58]])

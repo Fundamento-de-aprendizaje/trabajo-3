@@ -1,13 +1,10 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression, LogisticRegression
-
 from sklearn.svm import SVC
 from sklearn.decomposition import PCA
-
 from funciones import imprimirMatriz,visualizarAcyF1,graficoDeBarrasF1yAc
+
 #################################   PUNTO 1   #################################  
 # === 1. CARGA Y LIMPIEZA DE DATOS ===
 def cargar_y_limpiar_datos(url, columnas):
@@ -58,7 +55,7 @@ y = df['Calificación'].values
 
 # División en entrenamiento/prueba
 X_train, X_test, y_train, y_test = dividir_entrenamiento_prueba(X, y)
-
+print("\nEJERCICIO n°1 ")
 # Modelo
 beta = calcular_coeficientes(X_train, y_train)
 print(f"\n Coeficientes del modelo (β): {beta}")
@@ -72,7 +69,7 @@ print(f"R² sobre conjunto de prueba: {r2:.4f}")
 nuevo_estudiante = np.array([[25, 68, 58]])  # horas, examen previo, asistencia
 prediccion = predecir(nuevo_estudiante, beta)
 print(f"Predicción para nuevo estudiante: {prediccion[0]:.2f}\n")
-from sklearn.metrics import confusion_matrix
+
 
 # Convertimos a clasificación binaria
 y_test_clasificado = (y_test >= 60).astype(int)
@@ -80,7 +77,7 @@ y_pred_clasificado = (y_pred >= 60).astype(int)
 
 
 # Matriz de confusión
-print("EJERCICIO n°1 ")
+
 imprimirMatriz(y_test_clasificado, y_pred_clasificado,'Matriz de Confusión De Regresión Logística')
 array_de_metricas=[]
 

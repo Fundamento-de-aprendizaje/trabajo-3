@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 from sklearn.svm import SVC
 from sklearn.decomposition import PCA
 from funciones import imprimirMatriz,visualizarAcyF1,graficoDeBarrasF1yAc
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import  accuracy_score, f1_score
+
 
 #################################   PUNTO 1   #################################  
 # === 1. CARGA Y LIMPIEZA DE DATOS ===
@@ -60,6 +63,19 @@ print("\nEJERCICIO n°1 ")
 beta = calcular_coeficientes(X_train, y_train)
 print(f"\n Coeficientes del modelo (β): {beta}")
 
+# Mostrar la ecuación del modelo de regresión lineal múltiple
+intercepto = beta[0]
+coeficientes = beta[1:]
+variables = ['Horas de estudio por semana', 'Calificaciones previas', 'Porcentaje de asistencia']
+
+ecuacion = f"y = {intercepto:.4f}"
+for i, coef in enumerate(coeficientes):
+    signo = '+' if coef >= 0 else '-'
+    ecuacion += f" {signo} {abs(coef):.4f} * {variables[i]}"
+print(f"\nEcuación del modelo de regresión lineal múltiple:")
+print(ecuacion)
+
+
 # Predicción y R²
 y_pred = predecir(X_test, beta)
 r2 = calcular_r2(y_test, y_pred)
@@ -68,20 +84,53 @@ print(f"R² sobre conjunto de prueba: {r2:.4f}")
 # Predicción para nuevo estudiante
 nuevo_estudiante = np.array([[25, 68, 58]])  # horas, examen previo, asistencia
 prediccion = predecir(nuevo_estudiante, beta)
-print(f"Predicción para nuevo estudiante: {prediccion[0]:.2f}\n")
+print(f"Calificacion esperada: {prediccion[0]:.2f}\n")
+aprobado = int(prediccion[0] >= 60)
+estado = "Aprobado" if aprobado == 1 else "No aprobado"
+print(f"Condicion de aprobacion: {estado}")
 
+# === REGRESIÓN LOGÍSTICA ===
+print("EJERCICIO REGRESIÓN LOGÍSTICA")
 
-# Convertimos a clasificación binaria
+# Convertimos a clasificación binaria (umbral 60 para aprobado)
+y_train_clasificado = (y_train >= 60).astype(int)
 y_test_clasificado = (y_test >= 60).astype(int)
-y_pred_clasificado = (y_pred >= 60).astype(int)
 
+# Crear y entrenar modelo de regresión logística
+modelo_logistico = LogisticRegression()
+modelo_logistico.fit(X_train, y_train_clasificado)
+
+# Imprimir ecuación del modelo (logit)
+intercepto = modelo_logistico.intercept_[0]
+coeficientes = modelo_logistico.coef_[0]
+print(f"Ecuación del modelo de regresión logística:")
+print(f"logit(p) = {intercepto:.4f} + " +
+      " + ".join([f"({coef:.4f} * x{i+1})" for i, coef in enumerate(coeficientes)]))
+
+# Predicciones y evaluación
+y_pred_logistico = modelo_logistico.predict(X_test)
 
 # Matriz de confusión
+print("\nMatriz de Confusión - Regresión Logística")
+imprimirMatriz(y_test_clasificado, y_pred_logistico, 'Matriz de Confusión - Regresión Logística')
 
-imprimirMatriz(y_test_clasificado, y_pred_clasificado,'Matriz de Confusión De Regresión Logística')
-array_de_metricas=[]
+# Accuracy y F1-score
+accuracy = accuracy_score(y_test_clasificado, y_pred_logistico)
+f1 = f1_score(y_test_clasificado, y_pred_logistico)
+print(f"Accuracy: {accuracy:.4f}")
+print(f"F1 Score: {f1:.4f}")
 
-array_de_metricas=array_de_metricas+[visualizarAcyF1(y_test_clasificado, y_pred_clasificado,'Metrica de Modelo De Regresión Logística')]
+# Puedes agregar las métricas al arreglo para graficar si quieres
+array_de_metricas = []
+array_de_metricas.append((accuracy, f1, 'Regresión Logística'))
+
+
+prediccion_logistica = modelo_logistico.predict(nuevo_estudiante)
+print(f"Condicion de aprobacion: {'Aprobado' if (prediccion_logistica[0] == 1) else 'No Aprobado'}")
+probabilidad_logistica = modelo_logistico.predict_proba(nuevo_estudiante)[:, 1]
+print(f"Probabilidad de aprobar: {probabilidad_logistica[0]:.4f}\n")
+
+
 
 #################################   EJERCICIO 2 - SVM   #################################
 print("EJERCICIO n°2 ")
@@ -150,9 +199,3 @@ nuevo_estudiante = np.array([[25, 68, 58]])
 prediccion = modelo_final.predict(nuevo_estudiante)
 estado = "Aprobado" if prediccion[0] == 1 else "Desaprobado"
 print(f"\nCondición de aprobación del nuevo estudiante: {estado}")
-
-
-#*******************************************************************************************************************
-
-
-#

@@ -114,15 +114,11 @@ y_pred_logistico = modelo_logistico.predict(X_test)
 print("\nMatriz de Confusión - Regresión Logística")
 imprimirMatriz(y_test_clasificado, y_pred_logistico, 'Matriz de Confusión - Regresión Logística')
 
-# Accuracy y F1-score
-accuracy = accuracy_score(y_test_clasificado, y_pred_logistico)
-f1 = f1_score(y_test_clasificado, y_pred_logistico)
-print(f"Accuracy: {accuracy:.4f}")
-print(f"F1 Score: {f1:.4f}")
+
 
 # Puedes agregar las métricas al arreglo para graficar si quieres
 array_de_metricas = []
-array_de_metricas.append((accuracy, f1, 'Regresión Logística'))
+array_de_metricas=array_de_metricas+[visualizarAcyF1(y_test_clasificado,  y_pred_logistico,'Reg Log')]
 
 
 prediccion_logistica = modelo_logistico.predict(nuevo_estudiante)

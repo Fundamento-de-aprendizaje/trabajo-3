@@ -185,7 +185,6 @@ for kernel in kernels:
         plt.tight_layout()
         plt.show()
 
-
 gammas = [0.01, 0.1, 1]
 C_values = [0.1, 1, 10]
 

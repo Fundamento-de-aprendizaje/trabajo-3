@@ -5,7 +5,6 @@ from sklearn.svm import SVC
 from sklearn.decomposition import PCA
 from funciones import imprimirMatriz,visualizarAcyF1,graficoDeBarrasF1yAc
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import  accuracy_score, f1_score
 
 
 #################################   PUNTO 1   #################################  

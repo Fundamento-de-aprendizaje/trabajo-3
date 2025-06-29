@@ -69,10 +69,6 @@ def visualizarAcyF1(y_true, y_pred,titulo1,titulo2="",kernel="",C=""):
 
 
 def graficoDeBarrasF1yAc(array_de_metricas):
- 
-
-    
-
     df = pd.DataFrame(array_de_metricas, columns=['F1 Score', 'Accuracy', 'Modelo'])
     
     # Convertir a formato largo para Seaborn

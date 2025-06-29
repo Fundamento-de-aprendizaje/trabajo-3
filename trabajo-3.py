@@ -194,3 +194,4 @@ nuevo_estudiante = np.array([[25, 68, 58]])
 prediccion = modelo_final.predict(nuevo_estudiante)
 estado = "Aprobado" if prediccion[0] == 1 else "Desaprobado"
 print(f"\nCondición de aprobación del nuevo estudiante: {estado}")
+

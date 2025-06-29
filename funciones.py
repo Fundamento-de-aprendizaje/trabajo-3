@@ -12,20 +12,20 @@ def imprimirMatriz(y_test_clasificado, y_pred_clasificado,titulo1,titulo2="",ker
     titulo= f"{titulo1}{kernel}{titulo2}{C}"
     # === GRAFICAR MATRIZ DE CONFUSIÓN ===
 
-    plt.figure(figsize=(6, 5))
-    sns.heatmap(
-        matriz,
-        annot=True,               # Mostrar los números
-        fmt='d',                  # Formato decimal
-        cmap='Blues',             # Paleta de colores
-        cbar=False,               # Quitar barra de color
-        annot_kws={"size": 60}    # Cambiar el tamaño de fuente de los números
-    )
-    plt.xlabel('Predicción', fontsize=14)
-    plt.ylabel('Real', fontsize=14)
-    plt.title(titulo)
-    plt.tight_layout()
-    plt.show()
+    # plt.figure(figsize=(6, 5))
+    # sns.heatmap(
+    #     matriz,
+    #     annot=True,               # Mostrar los números
+    #     fmt='d',                  # Formato decimal
+    #     cmap='Blues',             # Paleta de colores
+    #     cbar=False,               # Quitar barra de color
+    #     annot_kws={"size": 60}    # Cambiar el tamaño de fuente de los números
+    # )
+    # plt.xlabel('Predicción', fontsize=14)
+    # plt.ylabel('Real', fontsize=14)
+    # plt.title(titulo)
+    # plt.tight_layout()
+    # plt.show()
 
 
 
@@ -46,25 +46,25 @@ def visualizarAcyF1(y_true, y_pred,titulo1,titulo2="",kernel="",C=""):
         barraTitulo=f"Reg.Log."
     else:    
         barraTitulo=f"{kernel}{titulo2}{C}"
-    metrics = {'Accuracy': accuracy, 'F1 Score': f1}
+#     metrics = {'Accuracy': accuracy, 'F1 Score': f1}
 
-    sns.set_style("whitegrid")
-    plt.figure(figsize=(5, 4))
-    sns.barplot(
-    x=list(metrics.keys()),
-    y=list(metrics.values()),
-    hue=list(metrics.keys()),  # assign x variable to hue
-    palette="viridis",
-    legend=False               # avoid duplicate legend
-)
+#     sns.set_style("whitegrid")
+#     plt.figure(figsize=(5, 4))
+#     sns.barplot(
+#     x=list(metrics.keys()),
+#     y=list(metrics.values()),
+#     hue=list(metrics.keys()),  # assign x variable to hue
+#     palette="viridis",
+#     legend=False               # avoid duplicate legend
+# )
 
    # sns.barplot(x=list(metrics.keys()), y=list(metrics.values()), palette="viridis")
-    plt.title(titulo)
-    plt.ylim(0, 1)
-    plt.ylabel("Valor")
-    for i, v in enumerate(metrics.values()):
-        plt.text(i, v + 0.02, f"{v:.3f}", ha='center')
-    plt.show()
+    # plt.title(titulo)
+    # plt.ylim(0, 1)
+    # plt.ylabel("Valor")
+    # for i, v in enumerate(metrics.values()):
+    #     plt.text(i, v + 0.02, f"{v:.3f}", ha='center')
+    # plt.show()
     return((f1,accuracy,barraTitulo))
 
 

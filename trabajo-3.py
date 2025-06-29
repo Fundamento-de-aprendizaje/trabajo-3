@@ -5,7 +5,7 @@ from sklearn.svm import SVC
 from sklearn.decomposition import PCA
 from funciones import imprimirMatriz,visualizarAcyF1,graficoDeBarrasF1yAc
 from sklearn.linear_model import LogisticRegression
-
+from matplotlib.colors import ListedColormap
 
 #################################   PUNTO 1   #################################  
 # === 1. CARGA Y LIMPIEZA DE DATOS ===
@@ -184,6 +184,43 @@ for kernel in kernels:
         plt.ylabel("x2")
         plt.tight_layout()
         plt.show()
+
+
+gammas = [0.01, 0.1, 1]
+C_values = [0.1, 1, 10]
+
+# PCA para reducción de dimensionalidad a 2D
+pca = PCA(n_components=2)
+X_train_2D = pca.fit_transform(X_train)
+X_test_2D = pca.transform(X_test)
+
+for C in C_values:
+    for gamma in gammas:
+        print(f"\n[MODELO SVM] Kernel=rbf | C={C} | gamma={gamma}")
+        
+        # Entrenar modelo
+        modelo = SVC(kernel='rbf', C=C, gamma=gamma)
+        modelo.fit(X_train_2D, y_train_clasificado)
+        
+        # Predicciones
+        y_pred = modelo.predict(X_test_2D)
+        
+        # === Graficar frontera de decisión ===
+        x_min, x_max = X_train_2D[:, 0].min() - 1, X_train_2D[:, 0].max() + 1
+        y_min, y_max = X_train_2D[:, 1].min() - 1, X_train_2D[:, 1].max() + 1
+        xx, yy = np.meshgrid(np.linspace(x_min, x_max, 500),
+                             np.linspace(y_min, y_max, 500))
+        grid = np.c_[xx.ravel(), yy.ravel()]
+        Z = modelo.predict(grid).reshape(xx.shape)
+
+        plt.figure(figsize=(6, 5))
+        plt.contourf(xx, yy, Z, cmap=ListedColormap(['#FFAAAA', '#AAAAFF']), alpha=0.4)
+        plt.scatter(X_test_2D[:, 0], X_test_2D[:, 1], c=y_test_clasificado, cmap=ListedColormap(['#FF0000', '#0000FF']), edgecolors='k')
+        plt.title(f"SVM (kernel='rbf') | C={C} | gamma={gamma}")
+        plt.xlabel("Componente Principal 1")
+        plt.ylabel("Componente Principal 2")
+        plt.tight_layout()
+        plt.show()       
 
 graficoDeBarrasF1yAc(array_de_metricas)
 # Predicción para nuevo estudiante usando un modelo elegido (ejemplo: RBF con C=1)
